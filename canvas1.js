@@ -1,3 +1,4 @@
+
 var score = 0;
 
 var canvas = document.getElementById('canvas');
@@ -8,12 +9,11 @@ var heroImage = new Image();
 heroImage.src = 'images/hero.png';
 var hero = {
   x: 200,
-  y: 200
+  y: 200,
+  dirX: 0,
+  dirY: 0,
+  speed: 8
 };
-var heroDirX = 0;
-var heroDirY = 0;
-
-var heroSpeed = 20;
 
 var monsterImage = new Image();
 monsterImage.src = 'images/monster.png';
@@ -21,37 +21,53 @@ var monster = {
   x: 300,
   y: 300
 };
-
 var monsterSpeed = 5;
 var monsterDirX = 1;
 var monsterDirY = 0;
 
 var goblinImage = new Image();
 goblinImage.src = 'images/goblin.png';
-var goblin = {
-  x: 350,
-  y: 350
-};
-var goblinImage1 = new Image();
-goblinImage.src = 'images/goblin1.png';
 var goblin1 = {
   x: 300,
-  y: 250
+  y: 300
 };
+var goblin2 = {
+  x: 100,
+  y: 300
+};
+var goblin1Speed = 3;
+var goblin1DirX = 1;
+var goblin1DirY = 0;
+var goblin2Speed = 3;
+var goblin2DirX = 1;
+var goblin2DirY = 0;
 
 window.addEventListener('keydown', function(event) {
   var key = event.keyCode;
   if (key === 37) { // left
-    heroDirX = -1;
+    hero.dirX = -1;
   } else if (key === 39) { // right
-    heroDirX = 1;
+    hero.dirX = 1;
   } else if (key === 38) { // up
-    heroDirY = -1;
+    hero.dirY = -1;
   } else if (key === 40) { // down
-    heroDirY = 1;
+    hero.dirY = 1;
   }
 
   handleWrapping(hero);
+});
+
+window.addEventListener('keyup', function(event) {
+  var key = event.keyCode;
+  if (key === 37) { // left
+    hero.dirX = 0;
+  } else if (key === 39) { // right
+    hero.dirX = 0;
+  } else if (key === 38) { // up
+    hero.dirY = 0;
+  } else if (key === 40) { // down
+    hero.dirY = 0;
+  }
 });
 
 function handleWrapping(object) {
@@ -88,8 +104,10 @@ function main() {
   counter++;
   ctx.drawImage(backgroundImage, 0, 0);
   ctx.drawImage(heroImage, hero.x, hero.y);
-  ctx.drawImage(goblinImage, goblin.x, goblin.y);
-  ctx.drawImage(goblinImage1, goblin1.x, goblin1.y);
+
+  hero.x += hero.dirX * hero.speed;
+  hero.y += hero.dirY * hero.speed;
+
 
   if (counter % 50 === 0) {
     monsterDirX = Math.floor(Math.random() * 3) - 1;
@@ -100,6 +118,26 @@ function main() {
   monster.y += monsterDirY * monsterSpeed;
   handleWrapping(monster);
 
+  // change goblin direction
+  if (counter % 50 === 0) {
+    goblin1DirX = Math.floor(Math.random() * 3) - 1;
+    goblin1DirY = Math.floor(Math.random() * 3) - 1;
+  }
+  // update monster position
+  goblin1.x += goblin1DirX * goblin1Speed;
+  goblin1.y += goblin1DirY * goblin1Speed;
+  handleWrapping(goblin1);
+
+  // change goblin direction
+  if (counter % 50 === 0) {
+    goblin2DirX = Math.floor(Math.random() * 3) - 1;
+    goblin2DirY = Math.floor(Math.random() * 3) - 1;
+  }
+  // update monster position
+  goblin2.x += goblin2DirX * goblin2Speed;
+  goblin2.y += goblin2DirY * goblin2Speed;
+  handleWrapping(goblin2);
+
   if (collision()) {
     score++;
     console.log('Score: ' + score);
@@ -108,6 +146,11 @@ function main() {
   }
 
   ctx.drawImage(monsterImage, monster.x, monster.y);
+
+  ctx.drawImage(goblinImage, goblin1.x, goblin1.y);
+  ctx.drawImage(goblinImage, goblin2.x, goblin2.y);
+
+
   ctx.font = "32px sans-serif";
   ctx.fillText('Score: ' + score, 35, 60);
   requestAnimationFrame(main);
