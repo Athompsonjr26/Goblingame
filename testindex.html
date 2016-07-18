@@ -1,0 +1,111 @@
+B
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<link rel="stylesheet" href="">
+
+</head>
+<body>
+	<div></div>
+</body>
+	<script type="text/javascript">
+//	create canvas with JS
+	var canvas = document.createElement('canvas');
+	// create a context var so we can target it
+	var ctx = canvas.getContext("2d");
+	// set canvas size
+	canvas.width = 512;
+	canvas.height = 480;
+	// put canvas in the DOM
+	document.body.appendChild(canvas);
+	// make a background image
+	var bgImage = new Image();
+	var bgReady = false;
+	bgImage.onload = function() {
+		bgReady = true;
+	}
+	bgImage.src = "background.png";
+	// make the hero
+	var chance = new Image();
+	chance.src = "hero.png";
+	var hero = {
+		speed: 200,   //movement in pixels per sec
+		x: 150,
+		y: 150
+	}
+	// make the goblin
+	var monster = new Image();
+	monster.src = "monster.png";
+	var goblin = {
+		speed: 200,   //movement in pixels per sec
+		x: 300,
+		y: 300
+	}
+	var keysDown = {};
+	addEventListener('keydown', function(e) {
+		keysDown[e.keyCode] = true;
+	});
+	addEventListener('keyup', function(e) {
+		delete keysDown[e.keyCode];
+	});
+	// Update function
+	// update the canvas based on which key pressed
+	// will change th ehero location and check to see if he ran into the monster
+	var update = function(modifier) {
+		if (37 in keysDown) {
+			hero.x -= hero.speed * modifier;
+		}
+		if (38 in keysDown) {
+			hero.y -= hero.speed * modifier;
+		}
+		if (39 in keysDown) {
+			hero.x += hero.speed * modifier;
+		}
+		if (40 in keysDown) {
+			hero.y += hero.speed * modifier;
+		}
+		goblinSpeedX = Math.random() * 400;
+		goblinSpeedY = Math.random() * 400;
+		goblinSpeedX = goblinSpeedX - (200 / 2);
+		goblinSpeedY = goblinSpeedY - (200 / 2);
+		goblin.x += goblinSpeedX * modifier;
+		goblin.y += goblinSpeedY * modifier;
+		if (hero.x <= (goblin.x + 32)
+		 && goblin.x <= (hero.x + 32)
+		 && hero.y <= (goblin.y +32)
+		 && goblin.y <= (hero.y + 32)) {
+			console.log("you hit the monster");
+			reset();
+		}
+	}
+	var reset = function() {
+		hero.x = 150;
+		hero.y = 150;
+		rand1 = Math.random() * (canvas.width - 64) + 32;
+		rand2 = Math.random() * (canvas.height - 64) + 32;
+		goblin.x = rand1;
+		goblin.x = rand2;
+	}
+	// draw the stuff
+	var render = function() {
+		if(bgReady) {
+			ctx.drawImage(bgImage, 0, 0);
+			ctx.drawImage(chance, hero.x, hero.y);
+			ctx.drawImage(monster, goblin.x, goblin.y);
+		}
+	}
+	var main = function() {
+		var now = Date.now();
+		var delta = now - then;
+		update(delta / 1000);
+		then = now;
+		render();
+		requestAnimationFrame(main);
+	}
+	var then = Date.now();
+	main();
+	</script>
+</html>
