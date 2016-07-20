@@ -85,15 +85,15 @@ function handleWrapping(object) {
   }
 }
 
-function collision() {
+function collision(enemy) {
   // detect collision
-  if (hero.x + 32 < monster.x) {
+  if (hero.x + 32 < enemy.x) {
     return false;
-  } else if (monster.x + 32 < hero.x) {
+  } else if (enemy.x + 32 < hero.x) {
     return false;
-  } else if (hero.y + 32 < monster.y) {
+  } else if (hero.y + 32 < enemy.y) {
     return false;
-  } else if (monster.y + 32 < hero.y) {
+  } else if (enemy.y + 32 < hero.y) {
     return false;
   }
   return true;
@@ -138,12 +138,18 @@ function main() {
   goblin2.y += goblin2DirY * goblin2Speed;
   handleWrapping(goblin2);
 
-  if (collision()) {
+  if (collision(monster)) {
     score++;
     console.log('Score: ' + score);
     monster.x = Math.random() * 512;
     monster.y = Math.random() * 480;
   }
+  if (collision(goblin1 || goblin2)) {
+     score -= score;
+     //radomly move the hero away from the goblins
+     hero.x = Math.floor(Math.random() * 400);
+     hero.y = Math.floor(Math.random() * 400);
+   }
 
   ctx.drawImage(monsterImage, monster.x, monster.y);
 
